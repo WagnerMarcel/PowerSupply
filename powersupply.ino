@@ -1,14 +1,19 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
+#define inputVoltage A0
 #define Sensor1 A1
 #define Sensor2 A2
 #define Sensor3 A3
-#define inputVoltage A0
+#define Button D2
 
 #define mVperAmp 186 
 #define sensdiff 39
 
+int screen = 0;
+
+float display_v = 0;
+float display_a = 0;
 
 float sense = 0;
 float vcc = 0; 
@@ -28,7 +33,10 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 void setup() { 
   // put your setup code here, to run once:
-  pinMode(Sensor1, INPUT); 
+  pinMode(Sensor1, INPUT);
+  pinMode(Button, INPUT_PULLUP);
+
+  attachInterrupt(digitalPinToInterrupt(Button), change, RISING);
 
   lcd.begin();
   lcd.backlight();
@@ -56,19 +64,34 @@ void loop() {
   voltage_3 = (float) voltage_3 - (vcc/2);
   ampere_3 = (float)(voltage_3 * sense)/1000; 
 
+
+  switch(screen){
+    case 0: display_v = 5.00;
+            display_a = ampere_1;
+            break;
+    case 1: display_v = 3.30;
+            display_a = ampere_2;
+            break;
+    case 2: display_v = 12.00;
+            display_a = ampere_3;
+            break;
+    default: break;
+    
+  }
   
   lcd.clear();
-  lcd.print("Volt: ");
-  if(Sensor1 != 512){
-    lcd.print("5V");
-  }
+  lcd.print("Volt:");
+  lcd.setCursor(8,0);
+  lcd.print(display_v);
+  lcd.setCursor(13, 0);
+  lcd.print("V");
   lcd.setCursor(0,1);
-  lcd.print("Ampere: ");
-  if(analogRead(Sensor1) != 512){
-    lcd.print(ampere_1);
-  }
+  lcd.print("Ampere:");
+  lcd.setCursor(8,1);
+  lcd.print(display_a);
+  lcd.setCursor(13, 1);
   lcd.print("A");
-  
+
   Serial.print("\t mV 1 = "); // shows the voltage_1 measured  
   Serial.print(voltage_1,3); // the '3' after voltage_1 allows you to display 3 digits after decimal point 
   Serial.print("\t Amps 1 = "); // shows the voltage_1 measured  
@@ -88,3 +111,13 @@ void loop() {
   Serial.println(" ");
   delay(2500); 
 } 
+
+void change(){
+  detachInterrupt(Button);
+  screen++;
+  if(screen > 2){
+    screen = 0;
+  }
+  attachInterrupt(digitalPinToInterrupt(Button), change, RISING);
+}
+
