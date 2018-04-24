@@ -5,7 +5,7 @@
 #define Sensor1 A1
 #define Sensor2 A2
 #define Sensor3 A3
-#define Button D2
+#define Button 2
 
 #define mVperAmp 186 
 #define sensdiff 39
