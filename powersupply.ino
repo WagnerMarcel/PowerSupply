@@ -20,10 +20,10 @@ When: Summer/Fall 2018
 #define sensdiff 39
 
 // Buttons for navigation the UI
-#define Button_up 2
-#define Button_down 3
-#define Button_select 4
-#define Button_back 5
+#define Button_select 2
+#define Button_back 3
+#define Button_up 4
+#define Button_down 5
 
 uint8_t block[9]  = {0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa};
 
